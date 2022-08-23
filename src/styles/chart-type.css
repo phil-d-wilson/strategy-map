@@ -1,0 +1,20 @@
+.chart-type-toggle {
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin: 0.2em -10.125em;
+  width: 2.5em;
+  height: 2.5em;
+  background-image: url('./images/menu-icon.svg');
+  background-size: 60% 60%;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  z-index: 11;
+  cursor: pointer;
+  border-radius: 0.25em;
+  background-color: rgba(0, 0, 0, 0.85);
+  transition-duration: 250ms;
+  transition-timing-function: ease-out;
+  transition-property: background-color;
+
+}
