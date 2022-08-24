@@ -1,7 +1,7 @@
 {
-  "name": "wineandcheesemap",
+  "name": "balena-strategy-map",
   "version": "1.0.0",
-  "description": "A wine and cheese visualisation app",
+  "description": "surface the balena strategic vision",
   "main": "none",
   "browserslist": [
     "defaults"
@@ -56,6 +56,7 @@
     "webpack-cli": "^3.3.10"
   },
   "dependencies": {
+    "@balena/jellyfish-client-sdk": "^13.0.18",
     "@babel/polyfill": "^7.7.0",
     "classnames": "^2.2.6",
     "cytoscape": "^3.12.1",
@@ -64,6 +65,9 @@
     "lodash.debounce": "^4.0.8",
     "lodash.memoize": "^4.1.2",
     "normalize.css": "^8.0.1",
-    "preact": "^10.0.5"
+    "preact": "^10.0.5",
+    "uuid": "^8.3.2",
+    "request": "^2.88.2",
+    "xlsx": "^0.18.5"
   }
 }

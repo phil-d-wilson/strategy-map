@@ -2,19 +2,19 @@ import EventEmitter from 'eventemitter3';
 import memoize from 'lodash.memoize';
 
 const layoutPadding = 10;
-const animationDuration = 500;
-const easing = 'ease';
-
 // search parameters
 const minMetricValue = 0.25; // filter out nodes from search results if they have total scores lower than this
 const minSimilarityValue = 0; // only include in total metric if the individual sim val is on [0.5, 1]
 
-const delayPromise = duration => new Promise(resolve => setTimeout(resolve, duration));
-
-const getOrgPos = n => Object.assign({}, n.data('orgPos'));
+//chart type enum
+const ChartTypes = Object.freeze({
+  FDG: 'dagre',
+  DAG: 'random'
+});
 
 class Controller {
-  constructor({ cy, mainLayout }){
+  constructor({ cy, mainLayout }) {
+    this.chartType = ChartTypes.FDG;
     this.cy = cy;
     this.mainLayout = mainLayout;
     this.bus = new EventEmitter();
@@ -39,6 +39,10 @@ class Controller {
 
     this.bus.emit('closeMenu');
     this.bus.emit('toggleMenu', false);
+  }
+
+  changeChartType() {
+    this.bus.emit('changeType');
   }
 
   toggleMenu(){
@@ -69,6 +73,30 @@ class Controller {
     return this.lastHighlighted != null;
   }
 
+  toggleChartType() {
+    const { cy } = this;
+
+
+    if (this.chartType === ChartTypes.FDG)
+    {
+      this.chartType = ChartTypes.DAG;
+    }
+    else
+    {
+      this.chartType = ChartTypes.FDG;
+    }
+    
+    cy.elements().layout({
+      name: this.chartType,
+      rankDir: 'TB',
+      fit: true,
+      avoidOverlap: true,
+      levelWidth: () => { return 1; },
+      padding: layoutPadding
+    }).run();
+
+  }
+
   highlight(node){
     const { cy } = this;
 
@@ -78,12 +106,14 @@ class Controller {
 
     const allEles = cy.elements();
     const nhood = this.lastHighlighted = node.closedNeighborhood();
-    const others = this.lastUnhighlighted = allEles.not( nhood );
+    const predecessors = node.predecessors();
+    let highlighted = nhood.union(predecessors);
+    const others = this.lastUnhighlighted = allEles.not( highlighted );
 
     const runLayout = () => {
 
-      const layout = nhood.layout({
-        name: 'dagre',
+      const layout = highlighted.layout({
+        name: this.chartType,
         rankDir: 'TB',
         fit: true,
         avoidOverlap: true,
@@ -136,7 +166,6 @@ class Controller {
     cy.stop();
     allNodes.stop();
 
-    //const nhood = this.lastHighlighted;
     const others = this.lastUnhighlighted;
 
     this.lastHighlighted = this.lastUnhighlighted = null;
@@ -159,6 +188,7 @@ class Controller {
 
     const runLayout = () => {
       this.bus.emit('unhighlight');
+      this.mainLayout.name = this.chartType;
       var layout = this.cy.layout(this.mainLayout);
       layout.run();
     };

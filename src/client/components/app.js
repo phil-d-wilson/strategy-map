@@ -6,6 +6,7 @@ import CytoscapeComponent from './cytoscape';
 import { isDev } from '../env';
 import { NodeInfo } from './node-info';
 import { Menu } from './menu';
+import { ChartType } from './chart-type';
 import * as data from '../cy-conf/data.json';
 import dagre from 'cytoscape-dagre';
 
@@ -108,7 +109,8 @@ class AppComponent extends Component {
         ])
       ) : null,
 
-      h(Menu, { controller })
+      h(Menu, { controller }),
+      h(ChartType, { controller })
     ]);
   }
 }
