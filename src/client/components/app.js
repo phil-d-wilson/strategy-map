@@ -9,9 +9,7 @@ import { Menu } from './menu';
 import { Filter } from './filter';
 import * as data from '../cy-conf/data.json';
 import dagre from 'cytoscape-dagre';
-import cola from 'cytoscape-cola';
 import euler from 'cytoscape-euler';
-import fcose from 'cytoscape-fcose';
 
 class AppComponent extends Component {
   constructor(props){
@@ -33,7 +31,7 @@ class AppComponent extends Component {
         name: 'euler',
         springLength: 300,
         animate: true,
-        fit: false,
+        fit: true,
         padding: 10, 
         centerGraph: true,
         springCoeff: 0.0008,
@@ -83,14 +81,11 @@ class AppComponent extends Component {
     };
 
     Cytoscape.use(dagre);
-    Cytoscape.use(cola);
     Cytoscape.use(euler);
-    Cytoscape.use(fcose);
 
     const cy = new Cytoscape({
       elements: {
         nodes:
-          //.filter(l => (l.sourceType != 'pattern'))
           data.nodes.map(function (node) {
             return {
               data: {
@@ -118,29 +113,11 @@ class AppComponent extends Component {
           }),
       },
       style,
-      // layout: layouts.DAG,
       selectionType: 'single',
       boxSelectionEnabled: true
     });
 
     cy.nodes().panify().ungrabify();
-
-    // cy.nodes(function (element) {
-    //   if (element.isNode() && element.data().NodeType === "pattern") {
-    //     element.remove();
-    //   }
-    // });
-
-    // //remove any nodes without links from the DAG
-    // cy.nodes(function (element) {
-    //   if (element.isNode() && element.degree() < 1) {
-    //     element.remove();
-    //   }
-    // });
-
-    // let filtered = cy.nodes().filter((ele) => {
-    //   return (ele.data().NodeType != 'pattern');
-    // });
 
     const controller = new Controller({ cy, layouts });
     const bus = controller.bus;

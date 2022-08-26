@@ -82,9 +82,6 @@ class Controller {
   }
 
   toggleChartType() {
-    const { cy } = this;
-
-
     if (this.chartType === ChartTypes.FDG) {
       this.chartType = ChartTypes.DAG;
     }
@@ -92,11 +89,7 @@ class Controller {
       this.chartType = ChartTypes.FDG;
     }
 
-    cy.elements().layout(
-
-      this.layouts[this.chartType]
-
-    ).run();
+    this.runLayout();
   }
 
   runLayout() {
@@ -215,7 +208,25 @@ highlight(node){
         fit: true,
         avoidOverlap: true,
         levelWidth: () => { return 1; },
-        padding: layoutPadding
+        padding: layoutPadding,
+        springLength: 300,
+        animate: true,
+        centerGraph: true,
+        springCoeff: 0.0008,
+        mass: 20,
+        gravity: -10,
+        pull: 0.0001,
+        theta: 0.333,
+        dragCoeff: 0.02,
+        movementThreshold: 1,
+        timeStep: 20,
+        refresh: 10,
+        animationDuration: undefined,
+        animationEasing: undefined,
+        maxIterations: 1000,
+        maxSimulationTime: 4000,
+        ungrabifyWhileSimulating: false,
+        randomize: true
       }
 
     );
