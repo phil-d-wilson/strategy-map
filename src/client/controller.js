@@ -8,33 +8,41 @@ const minSimilarityValue = 0; // only include in total metric if the individual 
 
 //chart type enum
 const ChartTypes = Object.freeze({
-  FDG: 'dagre',
-  DAG: 'random'
+  FDG: 'FDG',
+  DAG: 'DAG'
 });
 
 class Controller {
-  constructor({ cy, mainLayout }) {
-    this.chartType = ChartTypes.FDG;
+  constructor({ cy, layouts }) {
+    this.chartType = ChartTypes.DAG;
+    this.orphans = false;
+    this.patterns = false;
+    this.improvements = true;
+    this.sagas = true;
+    this.approaches = true;
+    this.assumptions = true;
+    this.goals = true;
     this.cy = cy;
-    this.mainLayout = mainLayout;
+    this.layouts = layouts;
     this.bus = new EventEmitter();
     this.menu = false;
     this.nodes = cy.nodes();
     this.searchMatchNodes = cy.collection();
+    this.removedNodes = cy.collection();
   }
 
-  isMenuOpen(){
+  isMenuOpen() {
     return this.menu;
   }
 
-  openMenu(){
+  openMenu() {
     this.menu = true;
 
     this.bus.emit('openMenu');
     this.bus.emit('toggleMenu', true);
   }
 
-  closeMenu(){
+  closeMenu() {
     this.menu = false;
 
     this.bus.emit('closeMenu');
@@ -45,31 +53,31 @@ class Controller {
     this.bus.emit('changeType');
   }
 
-  toggleMenu(){
-    if( this.isMenuOpen() ){
+  toggleMenu() {
+    if (this.isMenuOpen()) {
       this.closeMenu();
     } else {
       this.openMenu();
     }
   }
 
-  isInfoShown(){
+  isInfoShown() {
     return this.infoNode != null;
   }
 
-  showInfo(node){
+  showInfo(node) {
     this.infoNode = node;
 
     this.bus.emit('showInfo', node);
   }
 
-  hideInfo(){
+  hideInfo() {
     this.bus.emit('hideInfo', this.infoNode);
 
     this.infoNode = null;
   }
 
-  hasHighlight(){
+  hasHighlight() {
     return this.lastHighlighted != null;
   }
 
@@ -77,212 +85,300 @@ class Controller {
     const { cy } = this;
 
 
-    if (this.chartType === ChartTypes.FDG)
-    {
+    if (this.chartType === ChartTypes.FDG) {
       this.chartType = ChartTypes.DAG;
     }
-    else
-    {
+    else {
       this.chartType = ChartTypes.FDG;
     }
-    
-    cy.elements().layout({
-      name: this.chartType,
-      rankDir: 'TB',
-      fit: true,
-      avoidOverlap: true,
-      levelWidth: () => { return 1; },
-      padding: layoutPadding
-    }).run();
 
+    cy.elements().layout(
+
+      this.layouts[this.chartType]
+
+    ).run();
   }
 
-  highlight(node){
-    const { cy } = this;
+  runLayout() {
+    this.removedNodes.restore();
+    this.removedNodes = this.cy.collection();
+  
 
-    if( this.highlightInProgress ){ return Promise.resolve(); }
+    if (!this.patterns)
+    {
+      this.removeNodeType("pattern");
+    }
 
-    this.highlightInProgress = true;
+    if (!this.goals) {
+      this.removeNodeType("goal");
+    }
 
-    const allEles = cy.elements();
-    const nhood = this.lastHighlighted = node.closedNeighborhood();
-    const predecessors = node.predecessors();
-    let highlighted = nhood.union(predecessors);
-    const others = this.lastUnhighlighted = allEles.not( highlighted );
+    if (!this.improvements) {
+      this.removeNodeType("improvement");
+    }
 
-    const runLayout = () => {
+    if (!this.approaches) {
+      this.removeNodeType("approach");
+    }
 
-      const layout = highlighted.layout({
-        name: this.chartType,
+    if (!this.assumptions) {
+      this.removeNodeType("assumption");
+    }
+
+    if (!this.sagas) {
+      this.removeNodeType("saga");
+    }
+
+    if (!this.orphans)
+    {
+      this.removeOrphans();
+      }
+
+    this.cy.layout(
+
+      this.layouts[this.chartType]
+
+    ).run();
+  }
+
+  removeNodeType(type)
+  {
+    this.removedNodes = this.removedNodes.union(this.cy.remove('node[NodeType = "'+ type + '"]'));
+  }
+
+  removeOrphans()
+  {
+    let removed = this.cy.collection();
+      this.cy.nodes(function (element) {
+      if (element.isNode() && element.degree() < 1) {
+        removed = removed.union(element.remove());
+      }
+      });
+    
+    this.removedNodes = this.removedNodes.union(removed);
+  }
+
+  togglePatterns() {
+    this.patterns = !this.patterns;
+    this.runLayout();
+  }
+  
+  toggleSagas() {
+    this.sagas = !this.sagas;
+    this.runLayout();
+  }
+
+  toggleGoals() {
+    this.goals = !this.goals;
+    this.runLayout();
+  }
+
+  toggleAssumptions() {
+    this.assumptions = !this.assumptions;
+    this.runLayout();
+  }
+
+  toggleApproaches() {
+    this.approaches = !this.approaches;
+    this.runLayout();
+  }
+
+  toggleImprovements() {
+    this.improvements = !this.improvements;
+    this.runLayout();
+  }
+
+  toggleOrphans() {
+    this.orphans = !this.orphans;
+    this.runLayout();
+  }
+
+highlight(node){
+  const { cy } = this;
+
+  if (this.highlightInProgress) { return Promise.resolve(); }
+
+  this.highlightInProgress = true;
+
+  const allEles = cy.elements();
+  const nhood = this.lastHighlighted = node.closedNeighborhood();
+  const predecessors = node.predecessors();
+  let highlighted = nhood.union(predecessors);
+  const others = this.lastUnhighlighted = allEles.not(highlighted);
+
+  const runLayout = () => {
+
+    const layout = highlighted.layout(
+      {
+        name: this.layouts[this.chartType].name,
         rankDir: 'TB',
         fit: true,
         avoidOverlap: true,
         levelWidth: () => { return 1; },
         padding: layoutPadding
-      });
+      }
 
-      const promise = layout.promiseOn('layoutstop');
+    );
 
-      layout.run();
+    const promise = layout.promiseOn('layoutstop');
 
-      return promise;
-    };
+    layout.run();
 
-    const resetClasses = function () {
-      cy.batch(function () {
-        allEles.removeClass('hidden').removeClass('faded').removeClass('highlighted');
-      });
+    return promise;
+  };
 
-      return Promise.resolve();
-    };
+  const resetClasses = function () {
+    cy.batch(function () {
+      allEles.removeClass('hidden').removeClass('faded').removeClass('highlighted');
+    });
 
-    const showOthersFaded = () => {
-      cy.batch(() => {
-        others.removeClass('hidden').addClass('faded');
-      });
-    };
+    return Promise.resolve();
+  };
 
-    this.bus.emit('highlight', node);
+  const showOthersFaded = () => {
+    cy.batch(() => {
+      others.removeClass('hidden').addClass('faded');
+    });
+  };
 
-    return (
-      Promise.resolve()
+  this.bus.emit('highlight', node);
+
+  return (
+    Promise.resolve()
       .then(resetClasses)
-      .then( runLayout )
-      .then( showOthersFaded )
-      .then( () => {
+      .then(runLayout)
+      .then(showOthersFaded)
+      .then(() => {
         this.highlightInProgress = false;
         this.bus.emit('highlightend', node);
       })
-    );
-  }
+  );
+}
 
-  unhighlight(){
-    if( !this.hasHighlight() ){ return Promise.resolve(); }
+unhighlight(){
+  if (!this.hasHighlight()) { return Promise.resolve(); }
 
-    const { cy } = this;
-    const allEles = cy.elements();
-    const allNodes = cy.nodes();
+  const { cy } = this;
+  const allEles = cy.elements();
+  const allNodes = cy.nodes();
 
-    cy.stop();
-    allNodes.stop();
+  cy.stop();
+  allNodes.stop();
 
-    const others = this.lastUnhighlighted;
+  const others = this.lastUnhighlighted;
 
-    this.lastHighlighted = this.lastUnhighlighted = null;
+  this.lastHighlighted = this.lastUnhighlighted = null;
 
-    const hideOthers = function(){
-      others.addClass('hidden');
+  const hideOthers = function () {
+    others.addClass('hidden');
 
-      return Promise.resolve();
-    };
+    return Promise.resolve();
+  };
 
-    const resetClasses = function(){
-      cy.batch(function(){
-        allEles.removeClass('hidden').removeClass('faded').removeClass('highlighted');
-      });
-      
-      return Promise.resolve();
-    };
-
-    
-
-    const runLayout = () => {
-      this.bus.emit('unhighlight');
-      this.mainLayout.name = this.chartType;
-      var layout = this.cy.layout(this.mainLayout);
-      layout.run();
-    };
-
-    return (
-      Promise.resolve()
-      .then( hideOthers )
-        .then(resetClasses)
-        .then(runLayout)
-    );
-  }
-
-  updateSearch(queryString){
-    const normalize = str => str.toLowerCase();
-    const getWords = str => str.split(/\s+/);
-    const queryWords = getWords(normalize(queryString));
-
-    const addWords = (wordList, wordsStr) => {
-      if( wordsStr ){
-        wordList.push(...getWords(normalize(wordsStr)));
-      }
-    };
-
-    const cacheNodeWords = node => {
-      const data = node.data();
-      const wordList = [];
-      
-      addWords(wordList, data.name);
-      addWords(wordList, data.Synonym);
-      addWords(wordList, data.NodeTypeFormatted);
-      addWords(wordList, data.Milk);
-      addWords(wordList, data.Type);
-      addWords(wordList, data.Country);
-        
-      node.data('words', wordList);
-    };
-
-    const getStringSimilarity = (queryWord, nodeWord) => {
-      const index = nodeWord.indexOf(queryWord);
-
-      if( index === 0 ){
-        const diff = Math.abs(nodeWord.length - queryWord.length);
-        const maxLength = Math.max(nodeWord.length, queryWord.length);
-        
-        return 1 - (diff / maxLength);
-      } else {
-        return 0;
-      }
-    };
-
-    const getMetric = (node, queryWords) => {
-      const nodeWords = node.data('words');
-      let score = 0;
-
-      for( let i = 0; i < nodeWords.length; i++ ){
-        let nodeWord = nodeWords[i];
-
-        for( let j = 0; j < queryWords.length; j++ ){
-          let queryWord = queryWords[j];
-          let similarity = getStringSimilarity(queryWord, nodeWord);
-
-          if( similarity > minSimilarityValue ){
-            score += similarity;
-          }
-          
-        }
-      }
-      return score;
-    };
-
-    const getNodeMetric = memoize(node => getMetric(node, queryWords), node => node.id());
-
-    if( !this.cachedNodeWords ){
-      this.cy.batch(() => {
-        this.nodes.forEach(cacheNodeWords);
-      });
-
-      this.cachedNodeWords = true;
-    }
-
-    this.searchMatchNodes = this.nodes.filter(node => {
-      return getNodeMetric(node) > minMetricValue;
-    }).sort((nodeA, nodeB) => {
-      return getNodeMetric(nodeB) - getNodeMetric(nodeA);
+  const resetClasses = function () {
+    cy.batch(function () {
+      allEles.removeClass('hidden').removeClass('faded').removeClass('highlighted');
     });
 
-    this.bus.emit('updateSearch', this.searchMatchNodes);
+    return Promise.resolve();
+  };
 
-    return this.searchMatchNodes;
+  const runLayout = () => {
+    this.bus.emit('unhighlight');
+    var layout = this.cy.layout(this.layouts[this.chartType]);
+    layout.run();
+  };
+
+  return (
+    Promise.resolve()
+      .then(hideOthers)
+      .then(resetClasses)
+      .then(runLayout)
+  );
+}
+
+updateSearch(queryString){
+  const normalize = str => str.toLowerCase();
+  const getWords = str => str.split(/\s+/);
+  const queryWords = getWords(normalize(queryString));
+
+  const addWords = (wordList, wordsStr) => {
+    if (wordsStr) {
+      wordList.push(...getWords(normalize(wordsStr)));
+    }
+  };
+
+  const cacheNodeWords = node => {
+    const data = node.data();
+    const wordList = [];
+
+    addWords(wordList, data.name);
+    addWords(wordList, data.Synonym);
+    addWords(wordList, data.NodeTypeFormatted);
+    addWords(wordList, data.Milk);
+    addWords(wordList, data.Type);
+    addWords(wordList, data.Country);
+
+    node.data('words', wordList);
+  };
+
+  const getStringSimilarity = (queryWord, nodeWord) => {
+    const index = nodeWord.indexOf(queryWord);
+
+    if (index === 0) {
+      const diff = Math.abs(nodeWord.length - queryWord.length);
+      const maxLength = Math.max(nodeWord.length, queryWord.length);
+
+      return 1 - (diff / maxLength);
+    } else {
+      return 0;
+    }
+  };
+
+  const getMetric = (node, queryWords) => {
+    const nodeWords = node.data('words');
+    let score = 0;
+
+    for (let i = 0; i < nodeWords.length; i++) {
+      let nodeWord = nodeWords[i];
+
+      for (let j = 0; j < queryWords.length; j++) {
+        let queryWord = queryWords[j];
+        let similarity = getStringSimilarity(queryWord, nodeWord);
+
+        if (similarity > minSimilarityValue) {
+          score += similarity;
+        }
+
+      }
+    }
+    return score;
+  };
+
+  const getNodeMetric = memoize(node => getMetric(node, queryWords), node => node.id());
+
+  if (!this.cachedNodeWords) {
+    this.cy.batch(() => {
+      this.nodes.forEach(cacheNodeWords);
+    });
+
+    this.cachedNodeWords = true;
   }
 
-  getSearchMatchNodes(){
-    return this.searchMatchNodes;
-  }
+  this.searchMatchNodes = this.nodes.filter(node => {
+    return getNodeMetric(node) > minMetricValue;
+  }).sort((nodeA, nodeB) => {
+    return getNodeMetric(nodeB) - getNodeMetric(nodeA);
+  });
+
+  this.bus.emit('updateSearch', this.searchMatchNodes);
+
+  return this.searchMatchNodes;
+}
+
+getSearchMatchNodes(){
+  return this.searchMatchNodes;
+}
 }
 
 export default Controller;

@@ -7,7 +7,7 @@ core {
 edge {
 	curve-style: straight;
 	opacity: 0.333;
-	width: 5;
+	width: 5px;
 	z-index: 0;
 	overlay-opacity: 0;
   events: no;
@@ -49,8 +49,8 @@ node[NodeType = "mission"],
 node[NodeType = "mission"] {
 	background-color: #b53737;
 	text-outline-color: white;
-	height: 200;
-	width: 200;
+	height: 150;
+	width: 150;
 }
 
 node[NodeType = "assumption"],
@@ -93,6 +93,7 @@ node.highlighted {
 }
 
 edge.highlighted {
+	curve-style: taxi;
 	opacity: 0.8;
 	width: 4;
 	z-index: 9999;
@@ -111,6 +112,14 @@ edge.faded {
 }
 
 .hidden {
+	display: none;
+}
+
+.orphans-filtered {
+	display: none;
+}
+
+.patterns-filtered {
 	display: none;
 }
 
