@@ -90,9 +90,27 @@ class Controller {
     }
 
     this.runLayout();
+    
   }
 
-  runLayout() {
+  runLayout(randomise) {
+    this.drawLayout(randomise).then(() => {
+      this.animateView();
+    });
+  }
+
+  animateView() {
+    this.cy.animate({
+      fit: {
+        eles: this.cy,
+        padding: 10
+      }
+    }, {
+      duration: 1000
+    });
+  }
+
+  drawLayout() {
     this.removedNodes.restore();
     this.removedNodes = this.cy.collection();
   
@@ -125,7 +143,9 @@ class Controller {
     if (!this.orphans)
     {
       this.removeOrphans();
-      }
+    }
+    
+    const promise = this.cy.promiseOn('layoutstop');
 
     this.cy.layout(
 
@@ -133,14 +153,7 @@ class Controller {
 
     ).run();
 
-    this.cy.animate({
-      fit: {
-        eles: this.cy,
-        padding: 10
-      }
-    }, {
-      duration: 1000
-    });
+    return promise;
   }
 
   removeNodeType(type)
@@ -219,7 +232,7 @@ highlight(node){
           levelWidth: () => { return 1; },
           padding: layoutPadding,
           springLength: 300,
-          animate: false,
+          animate: 'end',
           centerGraph: true,
           springCoeff: 0.0008,
           mass: 20,
@@ -315,6 +328,17 @@ unhighlight(){
     return Promise.resolve();
   };
 
+  const animateView = () => {
+    cy.animate({
+      fit: {
+        eles: this.cy,
+        padding: 10
+      }
+    }, {
+      duration: 1000
+    });
+  };
+
   const runLayout = () => {
     this.bus.emit('unhighlight');
     var layout = this.cy.layout(this.layouts[this.chartType]);
@@ -326,6 +350,7 @@ unhighlight(){
       .then(hideOthers)
       .then(resetClasses)
       .then(runLayout)
+    .then(animateView)
   );
 }
 
