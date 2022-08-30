@@ -30,7 +30,7 @@ class AppComponent extends Component {
       FDG: {
         name: 'euler',
         springLength: 300,
-        animate: true,
+        animate: false,
         fit: true,
         padding: 10, 
         centerGraph: true,

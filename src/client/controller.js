@@ -132,6 +132,15 @@ class Controller {
       this.layouts[this.chartType]
 
     ).run();
+
+    this.cy.animate({
+      fit: {
+        eles: this.cy,
+        padding: 10
+      }
+    }, {
+      duration: 1000
+    });
   }
 
   removeNodeType(type)
@@ -201,41 +210,52 @@ highlight(node){
 
   const runLayout = () => {
 
-    const layout = highlighted.layout(
-      {
-        name: this.layouts[this.chartType].name,
-        rankDir: 'TB',
-        fit: true,
-        avoidOverlap: true,
-        levelWidth: () => { return 1; },
-        padding: layoutPadding,
-        springLength: 300,
-        animate: true,
-        centerGraph: true,
-        springCoeff: 0.0008,
-        mass: 20,
-        gravity: -10,
-        pull: 0.0001,
-        theta: 0.333,
-        dragCoeff: 0.02,
-        movementThreshold: 1,
-        timeStep: 20,
-        refresh: 10,
-        animationDuration: undefined,
-        animationEasing: undefined,
-        maxIterations: 1000,
-        maxSimulationTime: 4000,
-        ungrabifyWhileSimulating: false,
-        randomize: true
+      const layout = highlighted.layout(
+        {
+          name: this.layouts[this.chartType].name,
+          rankDir: 'TB',
+          fit: true,
+          avoidOverlap: true,
+          levelWidth: () => { return 1; },
+          padding: layoutPadding,
+          springLength: 300,
+          animate: false,
+          centerGraph: true,
+          springCoeff: 0.0008,
+          mass: 20,
+          gravity: -10,
+          pull: 0.0001,
+          theta: 0.333,
+          dragCoeff: 0.02,
+          movementThreshold: 1,
+          timeStep: 20,
+          refresh: 10,
+          animationDuration: undefined,
+          animationEasing: undefined,
+          maxIterations: 1000,
+          maxSimulationTime: 4000,
+          ungrabifyWhileSimulating: false,
+          randomize: false
+        }
+
+      );
+
+      const promise = layout.promiseOn('layoutstop');
+
+      layout.run();
+
+      return promise;
+  };
+
+  const animateView = function () {
+    cy.animate({
+      fit: {
+        eles: highlighted,
+        padding: 10
       }
-
-    );
-
-    const promise = layout.promiseOn('layoutstop');
-
-    layout.run();
-
-    return promise;
+    }, {
+      duration: 1000
+    });
   };
 
   const resetClasses = function () {
@@ -259,6 +279,7 @@ highlight(node){
       .then(resetClasses)
       .then(runLayout)
       .then(showOthersFaded)
+      .then(animateView)
       .then(() => {
         this.highlightInProgress = false;
         this.bus.emit('highlightend', node);
