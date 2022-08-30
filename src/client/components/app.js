@@ -30,47 +30,19 @@ class AppComponent extends Component {
       FDG: {
         name: 'euler',
         springLength: 300,
-        animate: false,
-        fit: true,
+        animate: 'end',
+        fit: false,
         padding: 10, 
         centerGraph: true,
         springCoeff: 0.0008,
-
-        // The mass of the node in the physics simulation
-        // - The mass affects the gravity node repulsion/attraction
         mass: 20,
-
-        // Coulomb's law coefficient
-        // - Makes the nodes repel each other for negative values
-        // - Makes the nodes attract each other for positive values
         gravity: -10,
-
-        // A force that pulls nodes towards the origin (0, 0)
-        // Higher values keep the components less spread out
         pull: 0.0001,
-
-        // Theta coefficient from Barnes-Hut simulation
-        // - Value ranges on [0, 1]
-        // - Performance is better with smaller values
-        // - Very small values may not create enough force to give a good result
         theta: 0.333,
-
-        // Friction / drag coefficient to make the system stabilise over time
         dragCoeff: 0.02,
-
-        // When the total of the squared position deltas is less than this value, the simulation ends
         movementThreshold: 1,
-
-        // The amount of time passed per tick
-        // - Larger values result in faster runtimes but might spread things out too far
-        // - Smaller values produce more accurate results
         timeStep: 20,
-
-        // The number of ticks per frame for animate:true
-        // - A larger value reduces rendering cost but can be jerky
-        // - A smaller value increases rendering cost but is smoother
         refresh: 10,
-
         animationDuration: undefined,
         animationEasing: undefined,
         maxIterations: 1000,
@@ -130,6 +102,7 @@ class AppComponent extends Component {
 
     this.state = { controller, cy };
     controller.runLayout();
+    
 
     bus.on('showInfo', this.onShowInfo = (node => {
       this.setState({ infoNode: node });
