@@ -1,4 +1,4 @@
-const { getSdk } = require('@balena/jellyfish-client-sdk')
+const { getSdk } = require('@balena/jellyfish-client-sdk');
 const fs = require('fs');
 const sheet = require('./SheetData.js');
 
@@ -54,7 +54,7 @@ async function GetData() {
                 .then((improvementCard) => {
                     if (improvementCard) {
                         if (improvementCard.links) {
-                            for (link of (improvementCard.links['is attached to'].filter(l => (['saga@1.0.0', 'pattern@1.0.0'].includes(l.type))))) {
+                            for (var link of (improvementCard.links['is attached to'].filter(l => (['saga@1.0.0', 'pattern@1.0.0'].includes(l.type))))) {
                                 AddNodeOrIgnoreDuplicate(link);
                                 AddLink(link, improvement);
                             }

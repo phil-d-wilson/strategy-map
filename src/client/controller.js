@@ -29,6 +29,7 @@ class Controller {
     this.nodes = cy.nodes();
     this.searchMatchNodes = cy.collection();
     this.removedNodes = cy.collection();
+    this.priority = false;
   }
 
   isMenuOpen() {
@@ -173,39 +174,76 @@ class Controller {
     this.removedNodes = this.removedNodes.union(removed);
   }
 
+  togglePriority()
+  {
+    this.priority = !this.priority;
+    this.unhighlight();
+    const prioritisedTypes = ['improvement', 'saga'];
+    prioritisedTypes.forEach(type => {
+      this.togglePriorityForType(type);
+    });
+
+    this.runLayout();
+  }
+
+  togglePriorityForType(type) {
+    const improvements = this.cy.elements("node[NodeType = '"+ type +"']");
+    const allElles = this.cy.elements();
+    
+    if (this.priority) {
+      this.cy.batch(function () {
+        improvements.addClass('prioritised');
+      });
+    }
+    else
+    {
+      this.cy.batch(function () {
+        allElles.removeClass('prioritised');
+      });
+    }
+    
+  }
+
+  resetView() {
+    this.unhighlight();
+    this.hideInfo();
+    this.closeMenu();
+    this.runLayout();
+  }
+
   togglePatterns() {
     this.patterns = !this.patterns;
-    this.runLayout();
+    this.resetView();
   }
   
   toggleSagas() {
     this.sagas = !this.sagas;
-    this.runLayout();
+    this.resetView();
   }
 
   toggleGoals() {
     this.goals = !this.goals;
-    this.runLayout();
+    this.resetView();
   }
 
   toggleAssumptions() {
     this.assumptions = !this.assumptions;
-    this.runLayout();
+    this.resetView();
   }
 
   toggleApproaches() {
     this.approaches = !this.approaches;
-    this.runLayout();
+    this.resetView();
   }
 
   toggleImprovements() {
     this.improvements = !this.improvements;
-    this.runLayout();
+    this.resetView();
   }
 
   toggleOrphans() {
     this.orphans = !this.orphans;
-    this.runLayout();
+    this.resetView();
   }
 
 highlight(node){

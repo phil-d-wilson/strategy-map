@@ -22,7 +22,7 @@
   position: absolute;
   left: 0;
   top: 0;
-  margin: 11.25em 0.125em;
+  margin: 13.25em 0.125em;
   width: 2.5em;
   height: 2.5em;
   background-image: url('./images/chart-type.svg');
@@ -54,35 +54,39 @@
 }
 
 .slider-labels.assumptions {
-  top: 1.75em;
-}
-
-.slider-labels.goals {
-  top: 3.25em;
-}
-
-.slider-labels.approaches {
-  top: 4.75em;
-}
-
-.slider-labels.sagas {
-  top: 6.25em;
-}
-
-.slider-labels.improvements {
-  top: 7.75em;
-}
-
-.slider-labels.patterns {
-  top: 9.25em;
-}
-
-.slider-labels.orphans {
   top: 0.25em;
 }
 
+.slider-labels.goals {
+  top: 1.75em;
+}
+
+.slider-labels.approaches {
+  top: 3.25em;
+}
+
+.slider-labels.sagas {
+  top: 4.75em;
+}
+
+.slider-labels.improvements {
+  top: 6.25em;
+}
+
+.slider-labels.patterns {
+  top: 7.75em;
+}
+
+.slider-labels.orphans {
+  top: 9.25em;
+}
+
 .slider-labels.chart-type {
-  top: 11.75em;
+  top: 14em;
+}
+
+.slider-labels.priority {
+  top: 10.75em;
 }
 
 .switch {

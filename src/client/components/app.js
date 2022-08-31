@@ -21,7 +21,7 @@ class AppComponent extends Component {
         animate: false,
         padding: 10,
         rankDir: 'TB',
-        nodeSep: 125,
+        nodeSep: 120,
         edgeSep: 100,
         rankSep: 150,
         avoidOverlap: true,
@@ -35,7 +35,7 @@ class AppComponent extends Component {
         padding: 10, 
         centerGraph: true,
         springCoeff: 0.0008,
-        mass: 20,
+        mass: 15,
         gravity: -10,
         pull: 0.0001,
         theta: 0.333,
@@ -66,8 +66,9 @@ class AppComponent extends Component {
                 description: node.name,
                 NodeType: node.group,
                 selected: false,
-                weight: (node.weight + 100),
-                link: node.Link
+                weight: node.weight + 100,
+                link: node.Link,
+                priority: "false"
               },
               selected: false
             };
@@ -79,7 +80,9 @@ class AppComponent extends Component {
                 id: (Math.random() + 1).toString(36).substring(7),
                 source: link.source,
                 target: link.target,
-                weight: (link.weight + 20)
+                weight: (link.weight + 20),
+                sourceType: link.sourceType,
+                targetType: link.targetType
               }
             };
           }),
@@ -90,6 +93,18 @@ class AppComponent extends Component {
     });
 
     cy.nodes().panify().ungrabify();
+
+    //TODO - remove this hack when JF gives improvements a weighting generated
+    //from the composite weights of their linked patterns
+    cy.elements("node[NodeType = 'improvement']").forEach(element => {
+      if (element.data().weight < 1) {
+        let compositeWeight = 0;
+        element.incomers("node[NodeType = 'pattern']").forEach(pattern => {
+          compositeWeight = compositeWeight + pattern.data().weight;
+        });
+        element.data().weight = (100 + (compositeWeight*1.5));
+      }
+    });
 
     const controller = new Controller({ cy, layouts });
     const bus = controller.bus;
@@ -102,7 +117,6 @@ class AppComponent extends Component {
 
     this.state = { controller, cy };
     controller.runLayout();
-    
 
     bus.on('showInfo', this.onShowInfo = (node => {
       this.setState({ infoNode: node });

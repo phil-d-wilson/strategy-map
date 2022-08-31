@@ -39,13 +39,11 @@ edge[interaction = "cc"] {
 	width: 4;
 }
 
-node[NodeType = "saga"],
 node[NodeType = "saga"] {
 	background-color: #9e79db;
 	text-outline-color: white;
 }
 
-node[NodeType = "mission"],
 node[NodeType = "mission"] {
 	background-color: #b53737;
 	text-outline-color: white;
@@ -53,38 +51,35 @@ node[NodeType = "mission"] {
 	width: 150;
 }
 
-node[NodeType = "assumption"],
 node[NodeType = "assumption"] {
 	background-color: #86cbff;
 	text-outline-color: white;
 }
 
-node[NodeType = "goal"],
 node[NodeType = "goal"] {
 	background-color: #c2e5a0;
 	text-outline-color: white;
 }
 
-node[NodeType = "approach"],
 node[NodeType = "approach"] {
 	background-color: #fff686;
 	text-outline-color: white;
 }
 
-node[NodeType = "improvement"],
 node[NodeType = "improvement"] {
 	background-color: #ff9e6d;
 	text-outline-color: white;
 }
 
-node[NodeType = "pattern"],
+
 node[NodeType = "pattern"] {
 	background-color: #E91E63;
 	text-outline-color: white;
 }
 
-edge[interaction = "cw"] {
-	line-color: white;
+edge[sourceType = "pattern"] {
+	line-color: red;
+	width: data(weight);
 }
 
 node.highlighted {
@@ -97,6 +92,11 @@ edge.highlighted {
 	opacity: 0.8;
 	width: 4;
 	z-index: 9999;
+}
+
+.prioritised {
+	height: data(weight);
+	width: data(weight);
 }
 
 .faded {

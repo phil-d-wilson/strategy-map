@@ -41,6 +41,11 @@ class Filter extends Component {
         controller.toggleOrphans();
     }
 
+    togglePriority() {
+        const { controller } = this.props;
+        controller.togglePriority();
+    }
+
     render() {
         const { controller } = this.props;
 
@@ -54,20 +59,7 @@ class Filter extends Component {
                 h('label', { class: classNames({ 'switch': true }) }, [
                     h('input', {
                         type: 'checkbox',
-                        checked: false,
-                        onClick: () => this.toggleOrphans()
-                    }),
-                    h('span', {
-                        class: 'slider round'
-                    })
-                ]),
-                h('span', { class: 'slider-labels orphans' }, 'orphans')
-            ]),
-            h('div', { class: classNames({ 'filter-position': true }) }, [
-                h('label', { class: classNames({ 'switch': true }) }, [
-                    h('input', {
-                        type: 'checkbox',
-                        checked: true,
+                        checked: controller.assumptions,
                         onClick: () => this.toggleAssumptions()
                     }),
                     h('span', {
@@ -80,7 +72,7 @@ class Filter extends Component {
                 h('label', { class: classNames({ 'switch': true }) }, [
                     h('input', {
                         type: 'checkbox',
-                        checked: true,
+                        checked: controller.goals,
                         onClick: () => this.toggleGoals()
                     }),
                     h('span', {
@@ -93,7 +85,7 @@ class Filter extends Component {
                 h('label', { class: classNames({ 'switch': true }) }, [
                     h('input', {
                         type: 'checkbox',
-                        checked: true,
+                        checked: controller.approaches,
                         onClick: () => this.toggleApproaches()
                     }),
                     h('span', {
@@ -106,7 +98,7 @@ class Filter extends Component {
                 h('label', { class: classNames({ 'switch': true }) }, [
                     h('input', {
                         type: 'checkbox',
-                        checked: true,
+                        checked: controller.sagas,
                         onClick: () => this.toggleSagas()
                     }),
                     h('span', {
@@ -119,7 +111,7 @@ class Filter extends Component {
                 h('label', { class: classNames({ 'switch': true }) }, [
                     h('input', {
                         type: 'checkbox',
-                        checked: true,
+                        checked: controller.improvements,
                         onClick: () => this.toggleImprovements()
                     }),
                     h('span', {
@@ -132,7 +124,7 @@ class Filter extends Component {
                 h('label', { class: classNames({ 'switch': true }) }, [
                 h('input', {
                     type: 'checkbox',
-                    checked: false,
+                    checked: controller.patterns,
                     onClick: () => this.togglePatterns()
                 }),
                     h('span', {
@@ -140,6 +132,32 @@ class Filter extends Component {
                 })
                 ]),
                 h('span', {class: 'slider-labels patterns'}, 'patterns')
+            ]),
+            h('div', { class: classNames({ 'filter-position': true }) }, [
+                h('label', { class: classNames({ 'switch': true }) }, [
+                    h('input', {
+                        type: 'checkbox',
+                        checked: controller.orphans,
+                        onClick: () => this.toggleOrphans()
+                    }),
+                    h('span', {
+                        class: 'slider round'
+                    })
+                ]),
+                h('span', { class: 'slider-labels orphans' }, 'orphans')
+            ]),
+            h('div', { class: classNames({ 'filter-position': true }) }, [
+                h('label', { class: classNames({ 'switch': true }) }, [
+                    h('input', {
+                        type: 'checkbox',
+                        checked: controller.priority,
+                        onClick: () => this.togglePriority()
+                    }),
+                    h('span', {
+                        class: 'slider round priority'
+                    })
+                ]),
+                h('span', { class: 'slider-labels priority' }, 'prioritisation')
             ])
         ]);
         
