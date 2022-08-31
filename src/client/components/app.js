@@ -97,12 +97,15 @@ class AppComponent extends Component {
     //TODO - remove this hack when JF gives improvements a weighting generated
     //from the composite weights of their linked patterns
     cy.elements("node[NodeType = 'improvement']").forEach(element => {
-      if (element.data().weight < 1) {
+      if (element.data().weight == 100) {
         let compositeWeight = 0;
         element.incomers("node[NodeType = 'pattern']").forEach(pattern => {
           compositeWeight = compositeWeight + pattern.data().weight;
         });
-        element.data().weight = (100 + (compositeWeight*1.5));
+        element.incomers("node[NodeType = 'saga']").forEach(pattern => {
+          compositeWeight = compositeWeight + pattern.data().weight;
+        });
+        element.data().weight = (100 + (compositeWeight/8));
       }
     });
 
