@@ -4,6 +4,19 @@ import classNames from 'classnames';
 class Filter extends Component {
     constructor(props) {
         super(props);
+
+        const { controller } = props;
+        const { bus } = controller;
+
+        bus.on('changeType', this.changeChartType = (() => {
+            this.setState({ open: false });
+        }));
+    }
+
+    setChartTypeLabel() {
+        const { controller } = this.props;
+        const toggle = document.getElementById('chart-type-label');
+        toggle.value = "Chart Type: " + controller.chartType;
     }
 
     togglePatterns() {
@@ -46,6 +59,11 @@ class Filter extends Component {
         controller.togglePriority();
     }
 
+    componentWillUnmount() {
+        const { bus } = this.props.controller;
+        bus.removeListener('changeType', this.changeChartType);
+    }
+
     render() {
         const { controller } = this.props;
 
@@ -54,7 +72,7 @@ class Filter extends Component {
                 class: classNames({ 'chart-type-toggle': true }),
                 onClick: () => controller.toggleChartType()
             }),
-            h('span', { class: 'slider-labels chart-type' }, 'chart type'),
+            h('span', { class: 'slider-labels chart-type', id: 'chart-type-label' }, "Chart Type: " + controller.chartType),
             h('div', { class: classNames({ 'filter-position': true }) }, [
                 h('label', { class: classNames({ 'switch': true }) }, [
                     h('input', {

@@ -50,10 +50,6 @@ class Controller {
     this.bus.emit('toggleMenu', false);
   }
 
-  changeChartType() {
-    this.bus.emit('changeType');
-  }
-
   toggleMenu() {
     if (this.isMenuOpen()) {
       this.closeMenu();
@@ -90,6 +86,7 @@ class Controller {
       this.chartType = ChartTypes.FDG;
     }
 
+    this.bus.emit('changeType');
     this.runLayout();
     
   }

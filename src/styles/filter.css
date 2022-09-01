@@ -22,7 +22,7 @@
   position: absolute;
   left: 0;
   top: 0;
-  margin: 13.25em 0.125em;
+  margin: 12.75em 0.125em;
   width: 2.5em;
   height: 2.5em;
   background-image: url('./images/chart-type.svg');
@@ -82,7 +82,7 @@
 }
 
 .slider-labels.chart-type {
-  top: 14em;
+  top: 13.25em;
 }
 
 .slider-labels.priority {

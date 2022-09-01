@@ -16,5 +16,3 @@ root.setAttribute('id', 'root');
 document.body.appendChild(root);
 
 render(h(AppComponent), root);
-
-console.log(`You can view the source code of this Cytoscape.js-powered app at https://github.com/cytoscape/wineandcheesemap`);
