@@ -47,16 +47,20 @@ async function GetData() {
     try {
         console.log("Getting all improvements");
         let improvements = await sdk.card.getAllByType("improvement@1.0.0");
-        for (let improvement of (improvements.filter(c => (c.data.status === "implementation")))) {
+        for (let improvement of (improvements.filter(c => (['implementation', 'ready-to-implement', 'awaiting-approval'].includes(c.data.status))))) {
             AddNodeOrIgnoreDuplicate(improvement);
 
             await sdk.card.getWithLinks(improvement.slug, ['is attached to'])
                 .then((improvementCard) => {
                     if (improvementCard) {
                         if (improvementCard.links) {
-                            for (var link of (improvementCard.links['is attached to'].filter(l => (['saga@1.0.0', 'pattern@1.0.0'].includes(l.type))))) {
-                                AddNodeOrIgnoreDuplicate(link);
-                                AddLink(link, improvement);
+                            for (var saga of (improvementCard.links['is attached to'].filter(l => (l.type === 'saga@1.0.0')))) {
+                                AddNodeOrIgnoreDuplicate(saga);
+                                AddLink(saga, improvement);
+                            }
+                            for (var pattern of (improvementCard.links['is attached to'].filter(l => (l.type === 'pattern@1.0.0')))) {
+                                AddNodeOrIgnoreDuplicate(pattern);
+                                AddLink(improvement, pattern);
                             }
                         }
                     }
@@ -90,6 +94,7 @@ function AddNodeOrIgnoreDuplicate(card) {
             "name": card.name,
             "group": card.type.substring(0, card.type.indexOf('@')),
             "weight": card.data.weight || 0,
+            "status": card.data.status,
             "Link": "https://jel.ly.fish/" + card.slug
         });
 
