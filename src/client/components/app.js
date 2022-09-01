@@ -10,7 +10,6 @@ import { Filter } from './filter';
 import * as data from '../cy-conf/data.json';
 import dagre from 'cytoscape-dagre';
 import euler from 'cytoscape-euler';
-
 class AppComponent extends Component {
   constructor(props){
     super(props);
@@ -25,7 +24,7 @@ class AppComponent extends Component {
         edgeSep: 100,
         rankSep: 150,
         avoidOverlap: true,
-        fit: true
+        fit: true,
       },
       FDG: {
         name: 'euler',
@@ -99,7 +98,7 @@ class AppComponent extends Component {
     cy.elements("node[NodeType = 'improvement']").forEach(element => {
       if (element.data().weight == 100) {
         let compositeWeight = 0;
-        element.incomers("node[NodeType = 'pattern']").forEach(pattern => {
+        element.outgoers("node[NodeType = 'pattern']").forEach(pattern => {
           compositeWeight = compositeWeight + pattern.data().weight;
         });
         element.incomers("node[NodeType = 'saga']").forEach(pattern => {

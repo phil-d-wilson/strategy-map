@@ -77,7 +77,7 @@ node[NodeType = "pattern"] {
 	text-outline-color: white;
 }
 
-edge[sourceType = "pattern"] {
+edge[targetType = "pattern"] {
 	line-color: red;
 	width: data(weight);
 }
