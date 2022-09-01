@@ -171,10 +171,14 @@ class Controller {
     this.removedNodes = this.removedNodes.union(removed);
   }
 
-  togglePriority()
-  {
+  togglePriority() {
     this.priority = !this.priority;
     this.unhighlight();
+    this.renderPriority();
+  }
+
+  renderPriority()
+    {
     const prioritisedTypes = ['improvement', 'saga'];
     prioritisedTypes.forEach(type => {
       this.togglePriorityForType(type);
@@ -206,6 +210,8 @@ class Controller {
     this.hideInfo();
     this.closeMenu();
     this.runLayout();
+    this.renderPriority();
+    
   }
 
   togglePatterns() {
