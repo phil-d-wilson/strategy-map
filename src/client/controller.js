@@ -1,7 +1,6 @@
 import EventEmitter from 'eventemitter3';
 import memoize from 'lodash.memoize';
 
-const layoutPadding = 10;
 // search parameters
 const minMetricValue = 0.25; // filter out nodes from search results if they have total scores lower than this
 const minSimilarityValue = 0; // only include in total metric if the individual sim val is on [0.5, 1]
@@ -22,6 +21,7 @@ class Controller {
     this.approaches = true;
     this.assumptions = true;
     this.goals = true;
+    this.users = false;
     this.cy = cy;
     this.layouts = layouts;
     this.bus = new EventEmitter();
@@ -142,6 +142,10 @@ class Controller {
     {
       this.removeOrphans();
     }
+
+    if (!this.users) {
+      this.removeNodeType("user");
+    }
     
     const promise = this.cy.promiseOn('layoutstop');
 
@@ -218,6 +222,11 @@ class Controller {
     this.patterns = !this.patterns;
     this.resetView();
   }
+
+  toggleUsers() {
+    this.users = !this.users;
+    this.resetView();
+  }
   
   toggleSagas() {
     this.sagas = !this.sagas;
@@ -271,7 +280,7 @@ highlight(node){
           fit: true,
           avoidOverlap: true,
           levelWidth: () => { return 1; },
-          padding: layoutPadding,
+          padding: 10,
           springLength: 300,
           animate: 'end',
           centerGraph: true,

@@ -77,6 +77,10 @@ node[NodeType = "pattern"] {
 	text-outline-color: white;
 }
 
+node[NodeType = "user"] {
+	text-outline-color: white;
+}
+
 edge[targetType = "pattern"] {
 	line-color: red;
 	width: data(weight);

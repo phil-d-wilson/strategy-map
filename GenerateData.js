@@ -65,6 +65,32 @@ async function GetData() {
                         }
                     }
                 });
+            await sdk.card.getWithLinks(improvement.slug, ['is owned by'])
+                .then((improvementCard) => {
+                    if (improvementCard) {
+                        if (improvementCard.links) {
+                            for (var owner of (improvementCard.links['is owned by'])) {
+                                if (owner) {
+                                    AddNodeOrIgnoreDuplicate(owner);
+                                    AddLink(improvement, owner);
+                                }
+                            }
+                        }
+                    }
+                });
+            await sdk.card.getWithLinks(improvement.slug, ['is contributed to by'])
+                .then((improvementCard) => {
+                    if (improvementCard) {
+                        if (improvementCard.links) {
+                            for (var contributor of (improvementCard.links['is contributed to by'])) {
+                                if (contributor) {
+                                    AddNodeOrIgnoreDuplicate(contributor);
+                                    AddLink(improvement, contributor);
+                                }  
+                            }
+                        }
+                    }
+                });
         }
 
         return data;

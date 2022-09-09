@@ -59,6 +59,11 @@ class Filter extends Component {
         controller.togglePriority();
     }
 
+    toggleUsers() {
+        const { controller } = this.props;
+        controller.toggleUsers();
+    }
+
     componentWillUnmount() {
         const { bus } = this.props.controller;
         bus.removeListener('changeType', this.changeChartType);
@@ -150,6 +155,19 @@ class Filter extends Component {
                 })
                 ]),
                 h('span', {class: 'slider-labels patterns'}, 'patterns')
+            ]),
+            h('div', { class: classNames({ 'filter-position': true }) }, [
+                h('label', { class: classNames({ 'switch': true }) }, [
+                    h('input', {
+                        type: 'checkbox',
+                        checked: controller.users,
+                        onClick: () => this.toggleUsers()
+                    }),
+                    h('span', {
+                        class: 'slider round users'
+                    })
+                ]),
+                h('span', { class: 'slider-labels users' }, 'users')
             ]),
             h('div', { class: classNames({ 'filter-position': true }) }, [
                 h('label', { class: classNames({ 'switch': true }) }, [
