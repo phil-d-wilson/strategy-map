@@ -112,6 +112,9 @@ class Controller {
     this.removedNodes.restore();
     this.removedNodes = this.cy.collection();
   
+    if (!this.users) {
+      this.removeNodeType("user");
+    }
 
     if (!this.patterns)
     {
@@ -143,9 +146,7 @@ class Controller {
       this.removeOrphans();
     }
 
-    if (!this.users) {
-      this.removeNodeType("user");
-    }
+ 
     
     const promise = this.cy.promiseOn('layoutstop');
 
