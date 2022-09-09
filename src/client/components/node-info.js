@@ -8,7 +8,7 @@ class NodeInfo extends Component {
   render(){
     const { node } = this.props;
     const data = node.data();
-    const description  = data.description;
+    const description  = data.name;
     const type = data.NodeType;
     const q = data.link;
 

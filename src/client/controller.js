@@ -422,9 +422,6 @@ updateSearch(queryString){
     addWords(wordList, data.name);
     addWords(wordList, data.Synonym);
     addWords(wordList, data.NodeTypeFormatted);
-    addWords(wordList, data.Milk);
-    addWords(wordList, data.Type);
-    addWords(wordList, data.Country);
 
     node.data('words', wordList);
   };
