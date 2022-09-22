@@ -21,7 +21,7 @@ class AppComponent extends Component {
         padding: 10,
         rankDir: 'TB',
         nodeSep: 120,
-        edgeSep: 100,
+        edgeSep: 200,
         rankSep: 150,
         avoidOverlap: true,
         fit: true,
@@ -54,6 +54,16 @@ class AppComponent extends Component {
     Cytoscape.use(dagre);
     Cytoscape.use(euler);
 
+    function GetName(node) {
+      let jfTypes = ["improvement", "pattern", "saga", "user"];
+      if (jfTypes.includes(node.group))
+      {
+        return ((node.name === null) ? node.id : (node.name).substring(0, 100));
+      }
+
+      return node.id;
+    }
+
     const cy = new Cytoscape({
       elements: {
         nodes:
@@ -61,7 +71,7 @@ class AppComponent extends Component {
             return {
               data: {
                 id: node.id,
-                name: ((node.name === null) ? node.id : (node.group + ": " + node.name).substring(0,100)),
+                name: GetName(node),
                 description: node.name,
                 NodeType: node.group,
                 selected: false,
@@ -88,7 +98,8 @@ class AppComponent extends Component {
       },
       style,
       selectionType: 'single',
-      boxSelectionEnabled: true
+      boxSelectionEnabled: true,
+      wheelSensitivity: 0.25
     });
 
     cy.nodes().panify().ungrabify();

@@ -16,7 +16,7 @@ class Controller {
     this.chartType = ChartTypes.DAG;
     this.orphans = false;
     this.patterns = false;
-    this.improvements = true;
+    this.improvements = false;
     this.sagas = true;
     this.approaches = true;
     this.assumptions = true;
