@@ -269,7 +269,9 @@ highlight(node){
   const allEles = cy.elements();
   const nhood = this.lastHighlighted = node.closedNeighborhood();
   const predecessors = node.predecessors();
-  let highlighted = nhood.union(predecessors);
+  const successors = node.outgoers();
+  let linked = predecessors.union(successors);
+  let highlighted = nhood.union(linked);
   const others = this.lastUnhighlighted = allEles.not(highlighted);
 
   const runLayout = () => {

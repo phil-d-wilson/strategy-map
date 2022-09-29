@@ -36,7 +36,9 @@ async function GetData() {
         console.log("Creating Sagas first");
         let sagas = await sdk.card.getAllByType("saga@1.0.0");
         for (let saga of sagas) {
-            AddNodeOrIgnoreDuplicate(saga);
+            if (saga.data.status === 'open') {
+                AddNodeOrIgnoreDuplicate(saga);
+            }
         }
     }
     catch (error)
