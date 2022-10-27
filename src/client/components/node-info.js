@@ -18,7 +18,7 @@ class NodeInfo extends Component {
       h('div', { class: 'node-info-description' }, description),
       h('div', { class: 'node-info-type' }, type),
       h('div', { class: 'node-info-more' }, [
-        h('a', { target: '_blank', href: `${q}` }, 'View Jellyfish card')
+        h('a', { target: '_blank', href: `${q}` }, 'View details')
       ])
     ]);
   }

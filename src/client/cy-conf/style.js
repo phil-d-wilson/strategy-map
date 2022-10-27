@@ -83,7 +83,7 @@ node[NodeType = "user"] {
 
 edge[targetType = "pattern"] {
 	line-color: red;
-	width: data(weight);
+	width: 4;
 }
 
 node.highlighted {
@@ -108,11 +108,11 @@ edge.highlighted {
 }
 
 node.faded {
-  opacity: 0.08;
+  opacity: 0.00;
 }
 
 edge.faded {
-  opacity: 0.06;
+  opacity: 0.00;
 }
 
 .hidden {

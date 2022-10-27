@@ -285,7 +285,7 @@ highlight(node){
           levelWidth: () => { return 1; },
           padding: 10,
           springLength: 300,
-          animate: 'end',
+          animate: false,
           centerGraph: true,
           springCoeff: 0.0008,
           mass: 20,
